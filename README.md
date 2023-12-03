@@ -4,14 +4,14 @@ https://adventofcode.com/2023
 
 ## Folder Structure
 
--   d#
+-   day\_#
     -   input.txt
-    -   p1.ts
-    -   p2.ts
+    -   part_1.ts
+    -   part_2.ts
     -   sample.txt
 
 ## Run File
 
 -   Open Terminal
 -   Change to folder for day
--   `npx tsx ./p1.ts`
+-   `npx tsx ./part_#.ts`
