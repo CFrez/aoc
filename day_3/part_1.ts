@@ -3,32 +3,49 @@ const fs = require("fs")
 const sample = fs.readFileSync("sample.txt", "utf-8")
 const input = fs.readFileSync("input.txt", "utf-8")
 
-type Line = number
+/**
+ * New Line Separated Input.
+ * Fixed width.
+ * Can have numbers and symbols spaced with periods.
+ */
+type Input = string
 
+type LineIndex = number
+
+/**
+ * For each line with symbols, store the index of each symbol
+ */
 type Symbols = {
-    [key: Line]: number[]
+    [key: LineIndex]: number[]
 }
 
+/**
+ * For each line with numbers, store an object with the line number,
+ * then an array of the index of each number of the number
+ */
+type Numbers = {
+    [key: LineIndex]: LineNumber[]
+}
+
+/**
+ * For each number on a line, store the line number,
+ * then index of each number of the number,
+ * and the index of one previous and one after the number
+ */
 type LineNumber = {
     lineNumber: number
     indexArray: number[]
 }
 
-type Numbers = {
-    [key: Line]: LineNumber[]
-}
-
-const collectSymbols = (input: string) => {
+function collectSymbols (input: Input) {
     const symbols: Symbols = {}
     let line = 1
     for (const lineString of input.split("\n")) {
         for (const lineSymbols of lineString.matchAll(/[^\d.]/g)) {
-            if (lineSymbols.index) {
-                if (!symbols[line]) {
-                    symbols[line] = [lineSymbols.index]
-                } else {
-                    symbols[line].push(lineSymbols.index)
-                }
+            if (!symbols[line]) {
+                symbols[line] = [lineSymbols.index!]
+            } else {
+                symbols[line].push(lineSymbols.index!)
             }
         }
         line += 1
@@ -36,7 +53,7 @@ const collectSymbols = (input: string) => {
     return symbols
 }
 
-const collectNumbers = (input: string) => {
+function collectNumbers (input: Input) {
     const numbers: Numbers = {}
     let line = 1
     for (const lineString of input.split("\n")) {
@@ -84,14 +101,16 @@ function checkLinesOfSymbols(symbols: Symbols, line: number, indexArray: number[
     return false
 }
 
-function findPartNumbers(label:string, input: string) {
-    const symbols = collectSymbols(input)
-    const numbers = collectNumbers(input)
+function findPartNumbers(label:string, input: Input) {
+    const symbols: Symbols = collectSymbols(input)
+    const numbers: Numbers = collectNumbers(input)
+
     const partNumbers: number[] = []
-    for (const [line, lineNumbers] of Object.entries(numbers)) {
-        const lineInt = parseInt(line)
+
+    for (const [lineIndex, lineNumbers] of Object.entries(numbers)) {
+        const lineIndexInt = parseInt(lineIndex)
         for (const lineNumber of lineNumbers) {
-            if (checkLinesOfSymbols(symbols, lineInt, lineNumber.indexArray)) {
+            if (checkLinesOfSymbols(symbols, lineIndexInt, lineNumber.indexArray)) {
                 partNumbers.push(lineNumber.lineNumber)
             }
         }

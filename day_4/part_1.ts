@@ -1,15 +1,9 @@
+import { getNumberArray } from "../utils"
 const fs = require("fs")
 
 const sample = fs.readFileSync("sample.txt", "utf-8")
 const input = fs.readFileSync("input.txt", "utf-8")
 
-function getNumberArray(input: string): number[] {
-    const numberArray: number[] = []
-    for (const number of input.matchAll(/\d+/g)) {
-        numberArray.push(parseInt(number[0]))
-    }
-    return numberArray
-}
 
 function checkCard(cardsString: string) {
     const cardData = cardsString.split(":")[1]
