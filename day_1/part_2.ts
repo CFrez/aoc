@@ -1,31 +1,37 @@
-const fs = require("fs")
+import { getNumberArray } from "../utils";
 
-const sample = fs.readFileSync("sample.txt", "utf-8")
-const input = fs.readFileSync("input.txt", "utf-8")
+const fs = require("fs");
 
+const sample = fs.readFileSync("sample.txt", "utf-8");
+const input = fs.readFileSync("input.txt", "utf-8");
 
-function getNumber(string: string) {
-    const digits = string
-        .replace(/one/g, 'one1one')
-        .replace(/two/g, 'two2two')
-        .replace(/three/g, 'three3three')
-        .replace(/four/g, 'four4four')
-        .replace(/five/g, 'five5five')
-        .replace(/six/g, 'six6six')
-        .replace(/seven/g, 'seven7seven')
-        .replace(/eight/g, 'eight8eight')
-        .replace(/nine/g, 'nine9nine')
-        .replace(/\D/g, '')
-    return Number(digits[0] + digits.slice(-1))
+/**
+ * There are two lists of numbers that are found. The two lists are vertical in the txt
+ * file, so we need to split the numbers by the newline character. The numbers are separated
+ * by three spaces, so we split the numbers by that.
+ *
+ *
+ */
+function getOrderedDifference(label: string, numbers: string) {
+  const a: number[] = [];
+  const bCount: Record<number, number> = {};
+
+  numbers.split("\n").forEach((element) => {
+    const digits = getNumberArray(element);
+    a.push(digits[0]);
+    bCount[digits[1]] = (bCount[digits[1]] || 0) + 1;
+  });
+
+  let sum = 0;
+  for (let i = 0; i < a.length; i++) {
+    const num = a[i];
+    if (num in bCount) {
+      sum += num * bCount[num];
+    }
+  }
+
+  console.log(`${label}: ${sum}`);
 }
 
-function sumNumbers(label: string, numbers: string) {
-    let sum = 0
-    numbers.split('\n').forEach((element) => {
-        sum += getNumber(element)
-    })
-    console.log(`${label}: ${sum}`)
-}
-
-sumNumbers('sample', sample)
-sumNumbers('input', input)
+getOrderedDifference("sample", sample);
+getOrderedDifference("input", input);

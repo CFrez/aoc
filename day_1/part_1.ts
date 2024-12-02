@@ -1,21 +1,36 @@
-const fs = require("fs")
+import { getNumberArray } from "../utils";
 
-const sample = fs.readFileSync("sample.txt", "utf-8")
-const input = fs.readFileSync("input.txt", "utf-8")
+const fs = require("fs");
 
-function getNumber(string: string){
-    const digits = string.replace(/\D/g,'')
-    return Number(digits[0]+digits.slice(-1))
+const sample = fs.readFileSync("sample.txt", "utf-8");
+const input = fs.readFileSync("input.txt", "utf-8");
+
+/**
+ * There are two lists of numbers that are found. The two lists are vertical in the txt
+ * file, so we need to split the numbers by the newline character. The numbers are separated
+ * by three spaces, so we split the numbers by that. We then sort the two lists of numbers
+ * and find the sum of the absolute difference between the two lists.
+ */
+function getOrderedDifference(label: string, numbers: string) {
+  const a: number[] = [];
+  const b: number[] = [];
+
+  numbers.split("\n").forEach((element) => {
+    const digits = getNumberArray(element);
+    a.push(Number(digits[0]));
+    b.push(Number(digits[1]));
+  });
+
+  a.sort((a, b) => a - b);
+  b.sort((a, b) => a - b);
+
+  let sum = 0;
+  for (let i = 0; i < a.length; i++) {
+    sum += Math.abs(a[i] - b[i]);
+  }
+
+  console.log(`${label}: ${sum}`);
 }
 
-
-function sumNumbers(label: string, numbers: string) {
-    let sum = 0
-    numbers.split('\n').forEach((element) => {
-        sum += getNumber(element)
-    })
-    console.log(`${label}: ${sum}`)
-}
-
-sumNumbers('sample', sample)
-sumNumbers('input', input)
+getOrderedDifference("sample", sample);
+getOrderedDifference("input", input);

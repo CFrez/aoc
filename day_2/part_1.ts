@@ -1,58 +1,42 @@
-const fs = require("fs")
+import { getNumbersArray } from "../utils";
 
-const sample = fs.readFileSync("sample.txt", "utf-8")
-const input = fs.readFileSync("input.txt", "utf-8")
+const fs = require("fs");
 
-type Bag = {
-    blue: number,
-    red: number,
-    green: number
+const sample = fs.readFileSync("sample.txt", "utf-8");
+const input = fs.readFileSync("input.txt", "utf-8");
 
-}
-
-const bag: Bag = { blue: 14, red: 12, green: 13 };
-
-function countColors(dice: RegExpMatchArray[]) {
-    let colors: Bag = { blue: 0, red: 0, green: 0 };
-    dice.forEach((hand) => {
-        const [count, color] = hand[0].split(' ');
-        const number = parseInt(count);
-        if (number > colors[color]) {
-            colors[color] = number
-        }
-    });
-    return colors;
-}
-
-function testCount(bag: Bag, dice: RegExpMatchArray[]){
-    const colors = countColors(dice);
-    if (colors.blue > bag.blue || colors.red > bag.red || colors.green > bag.green) {
-        return false;
+const determineIfReportIsSafe = (report: number[]): boolean => {
+  const allDescending = report.every((num, i, arr) => {
+    if (i === 0) return true;
+    if (num >= arr[i - 1]) {
+      const diff = num - arr[i - 1];
+      return diff <= 3 && diff >= 1;
     }
-    return true;
-}
+  });
 
-function processGame(game: string){
-    const gameNumber = game.split(':')[0].replace(/\D/g,'');
-    const dice = game.split(':')[1];
-
-    const diceArray = [...dice.matchAll(/\d+ \w+/g)]
-
-    const test = testCount(bag, diceArray);
-    if (test) {
-        return parseInt(gameNumber)
-    } else {
-        return 0
+  const allAscending = report.every((num, i, arr) => {
+    if (i === 0) return true;
+    if (num <= arr[i - 1]) {
+      const diff = arr[i - 1] - num;
+      return diff <= 3 && diff >= 1;
     }
-}
+  });
 
-function processGames(label: string, games: string){
-    let total = 0;
-    games.split('\n').forEach((game) => {
-        total += processGame(game);
-    });
-    console.log(`${label}: ${total}`)
-}
+  return allDescending || allAscending;
+};
 
-processGames('sample', sample)
-processGames('input', input)
+const countSafeReports = (label: string, input: string): number => {
+  const reports = getNumbersArray(input);
+  let count = 0;
+  for (let i = 0; i < reports.length; i++) {
+    if (determineIfReportIsSafe(reports[i])) {
+      count += 1;
+    }
+  }
+
+  console.log(label, count);
+  return count;
+};
+
+countSafeReports("Sample:", sample);
+countSafeReports("Input:", input);
